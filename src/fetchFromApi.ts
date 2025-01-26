@@ -7,13 +7,13 @@ export type ApiParams = {
   to?: string;
   currency: {
     symbol: string;
+    amount: string;
   };
   address: string;
-  amount: string;
 };
 
 // Define the desired XCM-API endpoint 🪄
-const API_URL = "https://api.lightspell.xyz/x-transfer-hash";
+const API_URL = "https://api.lightspell.xyz/x-transfer-papi";
 
 export const fetchFromApi = async (
   params: ApiParams
