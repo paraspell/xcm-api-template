@@ -13,7 +13,7 @@ export type ApiParams = {
 };
 
 // Define the desired XCM-API endpoint 🪄
-const API_URL = "https://api.lightspell.xyz/x-transfer";
+const API_URL = "https://api.lightspell.xyz/v3/x-transfer";
 
 export const fetchFromApi = async (
   params: ApiParams

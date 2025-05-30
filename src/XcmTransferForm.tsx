@@ -18,7 +18,7 @@ type Props = {
 const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
   // Prepare states for the form fields
   const [nodeNames, setNodeNames] = useState<string[]>([]);
-  const [originWsUrl, setOriginWsUrl] = useState("wss://astar-rpc.dwellir.com");
+  const [originWsUrl, setOriginWsUrl] = useState("wss://rpc.astar.network");
   const [originNode, setOriginNode] = useState("Astar");
   const [destinationNode, setDestinationNode] = useState("Hydration");
   const [currency, setCurrency] = useState("ASTR");
@@ -32,7 +32,7 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
   }, []);
 
   const fetchNodeNames = async () => {
-    const response = await axios.get("https://api.lightspell.xyz/nodes");
+    const response = await axios.get("https://api.lightspell.xyz/v3/nodes");
     setNodeNames(response.data);
   };
 
