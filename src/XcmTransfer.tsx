@@ -101,6 +101,9 @@ const XcmTransfer: FC = () => {
 
     const accounts = injectedExtension.getAccounts();
     setAccounts(accounts);
+
+    // Preselect the first account if available
+    if (accounts.length > 0) setSelectedAccount(accounts[0]);
   };
 
   return (
