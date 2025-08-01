@@ -45,9 +45,12 @@ const XcmTransfer: FC = () => {
       alert("No account selected, connect wallet first");
       return;
     }
+
     // Fetch the transaction hash from the API
     const txHash = await fetchFromApi({
-      ...formValues,
+      from: formValues.from,
+      to: formValues.to,
+      address: formValues.address,
       currency: {
         symbol: formValues.currency,
         amount: formValues.amount,

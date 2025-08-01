@@ -2,7 +2,6 @@ import axios, { AxiosError } from "axios";
 
 // Define the type for the API parameters 📦
 export type ApiParams = {
-  originWsUrl: string;
   from?: string;
   to?: string;
   currency: {

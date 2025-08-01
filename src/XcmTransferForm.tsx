@@ -21,7 +21,7 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
   const [originWsUrl, setOriginWsUrl] = useState("wss://rpc.astar.network");
   const [originNode, setOriginNode] = useState("Astar");
   const [destinationNode, setDestinationNode] = useState("Hydration");
-  const [currency, setCurrency] = useState("ASTR");
+  const [currency, setCurrency] = useState("DOT");
   const [address, setAddress] = useState(
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96"
   );
