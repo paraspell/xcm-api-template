@@ -10,7 +10,7 @@ import {
   PolkadotSigner,
 } from "polkadot-api/pjs-signer";
 import { Binary, createClient } from "polkadot-api";
-import { getWsProvider } from "polkadot-api/ws-provider/web";
+import { getWsProvider } from "polkadot-api/ws-provider";
 import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
 
 const XcmTransfer: FC = () => {

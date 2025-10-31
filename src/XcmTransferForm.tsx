@@ -17,31 +17,32 @@ type Props = {
 
 const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
   // Prepare states for the form fields
-  const [nodeNames, setNodeNames] = useState<string[]>([]);
+  const [chains, setChains] = useState<string[]>([]);
   const [originWsUrl, setOriginWsUrl] = useState("wss://rpc.astar.network");
-  const [originNode, setOriginNode] = useState("Astar");
-  const [destinationNode, setDestinationNode] = useState("Hydration");
+  const [originChain, setOriginChain] = useState("Astar");
+  const [destinationChain, setDestinationChain] = useState("Hydration");
   const [currency, setCurrency] = useState("DOT");
   const [address, setAddress] = useState(
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96"
   );
   const [amount, setAmount] = useState("10000000000000000000");
 
-  useEffect(() => {
-    fetchNodeNames();
-  }, []);
-
-  const fetchNodeNames = async () => {
-    const response = await axios.get("https://api.lightspell.xyz/v3/nodes");
-    setNodeNames(response.data);
+  const fetchChains = async () => {
+    const response = await axios.get("https://api.lightspell.xyz/v3/chains");
+    setChains(response.data);
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchChains();
+  }, []);
 
   // Handle form submission
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const transformedValues = {
-      from: originNode,
-      to: destinationNode,
+      from: originChain,
+      to: destinationChain,
       address,
       amount,
       currency,
@@ -65,30 +66,30 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
       </label>
 
       <label>
-        Origin node
+        Origin chain
         <select
-          value={originNode}
-          onChange={(e) => setOriginNode(e.target.value)}
+          value={originChain}
+          onChange={(e) => setOriginChain(e.target.value)}
           required
         >
-          {nodeNames.map((node) => (
-            <option key={node} value={node}>
-              {node}
+          {chains.map((chain) => (
+            <option key={chain} value={chain}>
+              {chain}
             </option>
           ))}
         </select>
       </label>
 
       <label>
-        Destination node
+        Destination chain
         <select
-          value={destinationNode}
-          onChange={(e) => setDestinationNode(e.target.value)}
+          value={destinationChain}
+          onChange={(e) => setDestinationChain(e.target.value)}
           required
         >
-          {nodeNames.map((node) => (
-            <option key={node} value={node}>
-              {node}
+          {chains.map((chain) => (
+            <option key={chain} value={chain}>
+              {chain}
             </option>
           ))}
         </select>
