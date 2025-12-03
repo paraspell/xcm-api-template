@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState, FormEvent, FC, useEffect } from "react";
+import { API_URL } from "./consts";
 
 export type FormValues = {
   originWsUrl: string;
@@ -21,14 +22,14 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
   const [originWsUrl, setOriginWsUrl] = useState("wss://rpc.astar.network");
   const [originChain, setOriginChain] = useState("Astar");
   const [destinationChain, setDestinationChain] = useState("Hydration");
-  const [currency, setCurrency] = useState("DOT");
+  const [currency, setCurrency] = useState("BNC");
   const [address, setAddress] = useState(
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96"
   );
   const [amount, setAmount] = useState("10000000000000000000");
 
   const fetchChains = async () => {
-    const response = await axios.get("https://api.lightspell.xyz/v3/chains");
+    const response = await axios.get(`${API_URL}/chains`);
     setChains(response.data);
   };
 

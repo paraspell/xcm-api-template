@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { API_URL } from "./consts";
 
 // Define the type for the API parameters 📦
 export type ApiParams = {
@@ -9,17 +10,15 @@ export type ApiParams = {
     amount: string;
   };
   address: string;
+  senderAddress: string;
 };
-
-// Define the desired XCM-API endpoint 🪄
-const API_URL = "https://api.lightspell.xyz/v3/x-transfer";
 
 export const fetchFromApi = async (
   params: ApiParams
 ): Promise<string | undefined> => {
   // Make a request using your favorite HTTP client
   try {
-    const response = await axios(API_URL, {
+    const response = await axios(`${API_URL}/x-transfer`, {
       method: "POST",
       data: params,
     });

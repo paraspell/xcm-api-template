@@ -51,6 +51,7 @@ const XcmTransfer: FC = () => {
       from: formValues.from,
       to: formValues.to,
       address: formValues.address,
+      senderAddress: selectedAccount.address,
       currency: {
         symbol: formValues.currency,
         amount: formValues.amount,
