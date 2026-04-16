@@ -1,29 +1,18 @@
 import axios, { AxiosError } from "axios";
 import { API_URL } from "./consts";
-
-// Define the type for the API parameters 📦
-export type ApiParams = {
-  from?: string;
-  to?: string;
-  currency: {
-    symbol: string;
-    amount: string;
-  };
-  address: string;
-  senderAddress: string;
-};
+import type { ApiParams, ApiTransaction } from "./types";
 
 export const fetchFromApi = async (
-  params: ApiParams
-): Promise<string | undefined> => {
+  params: ApiParams,
+): Promise<ApiTransaction[]> => {
   // Make a request using your favorite HTTP client
   try {
-    const response = await axios(`${API_URL}/x-transfer`, {
+    const response = await axios(`${API_URL}/x-transfers`, {
       method: "POST",
       data: params,
     });
 
-    return (await response.data) as string;
+    return response.data as ApiTransaction[];
   } catch (error) {
     // Handle errors
     if (error instanceof AxiosError) {
@@ -32,18 +21,22 @@ export const fetchFromApi = async (
       if (error.response === undefined) {
         errorMessage += " Couldn't connect to API.";
       } else {
-        const serverMessage =
-          error.response.data &&
-          (error.response.data as { message: string }).message
-            ? " Server response: " +
-              (error.response.data as { message: string }).message
-            : "";
+        const data = error.response.data as { message?: unknown };
+        const rawMessage = data?.message;
+        const serverMessage = rawMessage
+          ? " Server response: " +
+            (typeof rawMessage === "string"
+              ? rawMessage
+              : JSON.stringify(rawMessage))
+          : "";
         errorMessage += serverMessage;
       }
-      throw new Error(errorMessage);
+      throw new Error(errorMessage, { cause: error });
     } else if (error instanceof Error) {
       console.error(error);
-      throw new Error(error.message);
+      throw new Error(error.message, { cause: error });
+    } else {
+      throw new Error("An unknown error occurred", { cause: error });
     }
   }
 };

@@ -1,7 +1,8 @@
 import { useState, FC } from "react";
 import TransferForm from "./XcmTransferForm";
-import type { FormValues } from "./XcmTransferForm";
+import type { FormValues, ApiTransaction } from "./types";
 import { fetchFromApi } from "./fetchFromApi";
+import { submitTransaction } from "./utils";
 import {
   connectInjectedExtension,
   getInjectedExtensions,
@@ -9,9 +10,10 @@ import {
   InjectedPolkadotAccount,
   PolkadotSigner,
 } from "polkadot-api/pjs-signer";
-import { Binary, createClient } from "polkadot-api";
-import { getWsProvider } from "polkadot-api/ws-provider";
-import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
+import { Binary } from "polkadot-api";
+import { createWsClient } from "polkadot-api/ws";
+import axios from "axios";
+import { API_URL } from "./consts";
 
 const XcmTransfer: FC = () => {
   const [errorVisible, setErrorVisible] = useState(false);
@@ -39,40 +41,62 @@ const XcmTransfer: FC = () => {
 
   const submitUsingApi = async (
     formValues: FormValues,
-    signer: PolkadotSigner
+    signer: PolkadotSigner,
   ) => {
     if (!selectedAccount) {
       alert("No account selected, connect wallet first");
       return;
     }
 
-    // Fetch the transaction hash from the API
-    const txHash = await fetchFromApi({
+    // Build API params
+    const apiParams = {
       from: formValues.from,
       to: formValues.to,
-      address: formValues.address,
-      senderAddress: selectedAccount.address,
+      recipient: formValues.recipient,
+      sender: selectedAccount.address,
       currency: {
-        symbol: formValues.currency,
+        location: formValues.currency!.location,
         amount: formValues.amount,
       },
-    });
+      ...(formValues.swapEnabled && formValues.currencyTo
+        ? {
+            swapOptions: {
+              currencyTo: { symbol: formValues.currencyTo },
+              ...(formValues.exchange
+                ? { exchange: [formValues.exchange] }
+                : {}),
+            },
+          }
+        : {}),
+    };
 
-    if (!txHash) {
-      throw new Error("Transaction hash not found");
+    // Fetch the transactions from the API
+    const transactions = await fetchFromApi(apiParams);
+
+    // Each transaction may have a different origin chain
+    for (const apiTx of transactions) {
+      await submitApiTransaction(apiTx, signer);
+    }
+  };
+
+  // Submit a single API transaction by resolving WS endpoint for its chain
+  const submitApiTransaction = async (
+    apiTx: ApiTransaction,
+    signer: PolkadotSigner,
+  ) => {
+    // Fetch WS endpoints for the transaction's origin chain
+    const response = await axios.get(
+      `${API_URL}/chains/${apiTx.chain}/ws-endpoints`,
+    );
+    const endpoints = response.data as string[];
+    if (endpoints.length === 0) {
+      throw new Error(`No WS endpoints found for chain ${apiTx.chain}`);
     }
 
-    // Create the API instance
-    const client = createClient(
-      withPolkadotSdkCompat(getWsProvider(formValues.originWsUrl))
-    );
-
-    // Create the transfer transaction
-    const callData = Binary.fromHex(txHash);
+    const client = createWsClient(endpoints[0]);
+    const callData = Binary.fromHex(apiTx.tx);
     const tx = await client.getUnsafeApi().txFromCallData(callData);
-
-    // Sign and submit the transaction
-    await tx.signAndSubmit(signer);
+    await submitTransaction(tx, signer);
   };
 
   const onSubmit = async (formValues: FormValues) => {
@@ -144,7 +168,7 @@ const XcmTransfer: FC = () => {
               value={selectedAccount?.address}
               onChange={(e) =>
                 setSelectedAccount(
-                  accounts.find((acc) => acc.address === e.target.value)
+                  accounts.find((acc) => acc.address === e.target.value),
                 )
               }
             >
