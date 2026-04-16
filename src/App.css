@@ -73,6 +73,7 @@ select {
   transition: border-color 0.3s;
   max-width: 500px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 select {
@@ -113,6 +114,17 @@ button:hover {
 button:disabled {
   background-color: #999;
   cursor: not-allowed;
+}
+
+button.secondary {
+  background-color: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+button.secondary:hover {
+  background-color: #007bff;
+  color: #fff;
 }
 
 form > label + label {
